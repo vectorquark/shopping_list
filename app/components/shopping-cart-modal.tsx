@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Accordion from "./accordion";
-import { listMealIngredients, type ShoppingListByMealId } from "../shared/shopping-list-storage";
+import { listMealIngredients, deleteMealEntry, type ShoppingListByMealId } from "../shared/shopping-list-storage";
 
 type ShoppingCartModalProps = {
   isOpen: boolean;
@@ -38,6 +38,11 @@ export default function ShoppingCartModal({
 
   const mealEntries = Object.entries(savedMeals);
 
+  const handleDelete = (mealId: string) => {
+    deleteMealEntry(mealId);
+    setSavedMeals(listMealIngredients());
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-end bg-black/40 p-4"
@@ -69,7 +74,8 @@ export default function ShoppingCartModal({
         ) : (
           <ul className="flex flex-col gap-2 overflow-y-auto">
             {mealEntries.map(([mealId, { mealName, ingredients }]) => (
-              <li key={mealId}>
+              <li key={mealId} className="flex items-start gap-2">
+                <div className="flex-1">
                 <Accordion title={mealName}>
                   <ul className="space-y-1">
                     {ingredients.map(({ ingredient, measure }, index) => (
@@ -80,6 +86,15 @@ export default function ShoppingCartModal({
                     ))}
                   </ul>
                 </Accordion>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => handleDelete(mealId)}
+                  className="mt-1 shrink-0 rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 transition"
+                  aria-label={`Remove ${mealName}`}
+                >
+                  Remove
+                </button>
               </li>
             ))}
           </ul>
