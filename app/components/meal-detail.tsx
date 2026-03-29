@@ -1,10 +1,12 @@
 "use client";
 
-import React, { useEffect } from "react";
-import IngredientsSummary from "./ingredients-summary";
+import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
+import IngredientsList from "./ingredients-list";
+import InstructionsList from "./instructions-list";
 import MealVideo from "./meal-video";
 import { ingredientIterator } from "../shared/get-meal-ingredients";
-import { updateMealEntry } from "../shared/shopping-list-storage";
+import { readMealEntry, updateMealEntry } from "../shared/shopping-list-storage";
 import type { Meal } from "../types/mealdb";
 
 type MealDetailProps = {
@@ -13,6 +15,8 @@ type MealDetailProps = {
 };
 
 export default function MealDetail({ meal, onClose }: MealDetailProps) {
+  const [isMealSaved, setIsMealSaved] = useState(false);
+
   useEffect(() => {
     if (!meal) {
       return;
@@ -28,14 +32,32 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [meal, onClose]);
 
+  useEffect(() => {
+    if (!meal) {
+      setIsMealSaved(false);
+      return;
+    }
+
+    setIsMealSaved(Boolean(readMealEntry(meal.idMeal)));
+  }, [meal?.idMeal]);
+
   if (!meal) {
     return null;
   }
 
+  const ingredients = Array.from(ingredientIterator(meal));
+
   const handleAddToShoppingList = () => {
-    const ingredients = Array.from(ingredientIterator(meal));
     updateMealEntry(meal.idMeal, meal.strMeal, ingredients);
+    toast.success(`Updated ${meal.strMeal} in your shopping list.`);
+    setIsMealSaved(true);
     console.log(`Saved ${ingredients.length} ingredients for "${meal.strMeal}" (id: ${meal.idMeal})`, ingredients);
+  };
+
+  const handleOpenShoppingList = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    onClose();
+    window.dispatchEvent(new Event("shopping-list:open"));
   };
 
   return (
@@ -64,23 +86,32 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
             <h2 id="meal-detail-title" className="text-2xl font-bold text-zinc-900">
               {meal.strMeal}
             </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
-            >
-              Close
-            </button>
-          </div>
-
-          <div className="mt-4 flex flex-wrap gap-3">
-            <button
-              type="button"
-              onClick={handleAddToShoppingList}
-              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700"
-            >
-              Add to shopping list
-            </button>
+            <div className="flex items-center gap-2">
+              {isMealSaved ? (
+                <a
+                  href="#shopping-list"
+                  onClick={handleOpenShoppingList}
+                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700"
+                >
+                  Open shopping list
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleAddToShoppingList}
+                  className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700"
+                >
+                  Add to shopping list
+                </button>
+              )}
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
+              >
+                Close
+              </button>
+            </div>
           </div>
 
           <div className="mt-4 space-y-2 text-sm text-zinc-700">
@@ -98,22 +129,28 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
                 {meal.strTags}
               </p>
             )}
-            <div>
-              <span className="font-semibold text-zinc-900">Ingredients:</span>
-              <div className="mt-1">
-                <IngredientsSummary meal={meal} />
-              </div>
-            </div>
           </div>
 
-          <MealVideo youtubeUrl={meal.strYoutube} title={meal.strMeal} />
+          <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
+            <div>
+              <h3 className="text-base font-semibold text-zinc-900">Ingredients</h3>
+              <div className="mt-2">
+                <IngredientsList ingredients={ingredients} />
+              </div>
+            </div>
+
+            {meal.strYoutube?.trim() && (
+              <div>
+                <h3 className="text-base font-semibold text-zinc-900">Video</h3>
+                <MealVideo youtubeUrl={meal.strYoutube} title={meal.strMeal} />
+              </div>
+            )}
+          </div>
 
           {meal.strInstructions && (
             <div className="mt-5">
               <h3 className="text-base font-semibold text-zinc-900">Instructions</h3>
-              <p className="mt-2 whitespace-pre-line text-sm leading-6 text-zinc-700">
-                {meal.strInstructions}
-              </p>
+              <InstructionsList strInstructions={meal.strInstructions} />
             </div>
           )}
         </div>

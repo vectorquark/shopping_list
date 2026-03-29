@@ -1,19 +1,24 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import { toast } from "sonner";
 import Accordion from "./accordion";
+import IngredientsList from "./ingredients-list";
 import { listMealIngredients, deleteMealEntry, type ShoppingListByMealId } from "../shared/shopping-list-storage";
 
 type ShoppingCartModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  onViewMeal: (mealId: string) => Promise<void>;
 };
 
 export default function ShoppingCartModal({
   isOpen,
   onClose,
+  onViewMeal,
 }: ShoppingCartModalProps) {
   const [savedMeals, setSavedMeals] = useState<ShoppingListByMealId>({});
+  const [loadingMealId, setLoadingMealId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
@@ -39,8 +44,23 @@ export default function ShoppingCartModal({
   const mealEntries = Object.entries(savedMeals);
 
   const handleDelete = (mealId: string) => {
+    const removedMealName = savedMeals[mealId]?.mealName;
     deleteMealEntry(mealId);
     setSavedMeals(listMealIngredients());
+    toast.success(
+      removedMealName
+        ? `Removed ${removedMealName} from your shopping list.`
+        : "Removed recipe from your shopping list.",
+    );
+  };
+
+  const handleViewMeal = async (mealId: string) => {
+    setLoadingMealId(mealId);
+    try {
+      await onViewMeal(mealId);
+    } finally {
+      setLoadingMealId(null);
+    }
   };
 
   return (
@@ -54,11 +74,11 @@ export default function ShoppingCartModal({
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="shopping-cart-title"
+        aria-labelledby="shopping-list-title"
       >
         <div className="flex items-center justify-between mb-4">
-          <h2 id="shopping-cart-title" className="text-lg font-semibold text-zinc-900">
-            Shopping Cart
+          <h2 id="shopping-list-title" className="text-lg font-semibold text-zinc-900">
+            Shopping List
           </h2>
           <button
             type="button"
@@ -77,16 +97,18 @@ export default function ShoppingCartModal({
               <li key={mealId} className="flex items-start gap-2">
                 <div className="flex-1">
                 <Accordion title={mealName}>
-                  <ul className="space-y-1">
-                    {ingredients.map(({ ingredient, measure }, index) => (
-                      <li key={index} className="flex justify-between gap-4">
-                        <span>{ingredient}</span>
-                        {measure && <span className="text-zinc-500">{measure}</span>}
-                      </li>
-                    ))}
-                  </ul>
+                  <IngredientsList ingredients={ingredients} />
                 </Accordion>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => handleViewMeal(mealId)}
+                  disabled={loadingMealId === mealId}
+                  className="mt-1 shrink-0 rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100 disabled:cursor-wait disabled:opacity-60"
+                  aria-label={`View ${mealName}`}
+                >
+                  {loadingMealId === mealId ? "Loading..." : "View"}
+                </button>
                 <button
                   type="button"
                   onClick={() => handleDelete(mealId)}

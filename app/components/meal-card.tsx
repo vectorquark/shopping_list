@@ -12,7 +12,7 @@ export default function MealCard({ meal, onSelect }: MealCardProps) {
       <button
         type="button"
         onClick={() => onSelect?.(meal)}
-        className="w-full text-left"
+        className="w-full cursor-pointer text-left"
       >
         <div className="aspect-[4/3] w-full bg-zinc-100">
           {meal.strMealThumb ? (

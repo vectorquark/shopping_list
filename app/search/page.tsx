@@ -51,7 +51,14 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
         )}
 
         {text && (!meals || meals.length === 0) && (
-          <p className="mt-4 text-zinc-600">No recipes found.</p>
+          <div className="mt-6 flex flex-col items-center text-center">
+            <img
+              src="/no-recipes-cute.svg"
+              alt="Cute empty bowl illustration when no recipes are found"
+              className="h-auto w-full max-w-xs"
+            />
+            <p className="mt-3 text-zinc-600">No recipes found.</p>
+          </div>
         )}
       </section>
     </main>

@@ -1,0 +1,20 @@
+<svg width="320" height="220" viewBox="0 0 320 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="320" height="220" rx="24" fill="#FFF7ED"/>
+  <circle cx="72" cy="48" r="22" fill="#FDE68A" opacity="0.55"/>
+  <circle cx="262" cy="178" r="28" fill="#BAE6FD" opacity="0.5"/>
+  <ellipse cx="160" cy="182" rx="78" ry="14" fill="#E2E8F0"/>
+
+  <path d="M98 120C98 92.386 120.386 70 148 70H172C199.614 70 222 92.386 222 120V123C222 131.284 215.284 138 207 138H113C104.716 138 98 131.284 98 123V120Z" fill="#F8FAFC" stroke="#94A3B8" stroke-width="3"/>
+  <rect x="115" y="100" width="90" height="50" rx="12" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="2"/>
+
+  <circle cx="142" cy="121" r="5" fill="#334155"/>
+  <circle cx="178" cy="121" r="5" fill="#334155"/>
+  <path d="M143 136C148 141 155 144 160 144C165 144 172 141 177 136" stroke="#0F172A" stroke-width="3" stroke-linecap="round"/>
+
+  <path d="M110 90L95 80" stroke="#F59E0B" stroke-width="5" stroke-linecap="round"/>
+  <path d="M210 90L225 80" stroke="#F59E0B" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="92" cy="78" r="6" fill="#F59E0B"/>
+  <circle cx="228" cy="78" r="6" fill="#F59E0B"/>
+
+  <text x="160" y="42" text-anchor="middle" fill="#B45309" font-size="16" font-family="Verdana, sans-serif" font-weight="700">No recipes yet</text>
+</svg>
