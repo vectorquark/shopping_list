@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import IngredientsSummary from "./ingredients-summary";
 import MealVideo from "./meal-video";
 import { ingredientIterator } from "../shared/get-meal-ingredients";
+import { updateMealEntry } from "../shared/shopping-list-storage";
 import type { Meal } from "../types/mealdb";
 
 type MealDetailProps = {
@@ -32,7 +33,9 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
   }
 
   const handleAddToShoppingList = () => {
-    console.log(Array.from(ingredientIterator(meal)));
+    const ingredients = Array.from(ingredientIterator(meal));
+    updateMealEntry(meal.idMeal, meal.strMeal, ingredients);
+    console.log(`Saved ${ingredients.length} ingredients for "${meal.strMeal}" (id: ${meal.idMeal})`, ingredients);
   };
 
   return (

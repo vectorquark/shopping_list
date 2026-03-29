@@ -1,6 +1,8 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import Accordion from "./accordion";
+import { listMealIngredients, type ShoppingListByMealId } from "../shared/shopping-list-storage";
 
 type ShoppingCartModalProps = {
   isOpen: boolean;
@@ -11,10 +13,14 @@ export default function ShoppingCartModal({
   isOpen,
   onClose,
 }: ShoppingCartModalProps) {
+  const [savedMeals, setSavedMeals] = useState<ShoppingListByMealId>({});
+
   useEffect(() => {
     if (!isOpen) {
       return;
     }
+
+    setSavedMeals(listMealIngredients());
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -30,6 +36,8 @@ export default function ShoppingCartModal({
     return null;
   }
 
+  const mealEntries = Object.entries(savedMeals);
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-start justify-end bg-black/40 p-4"
@@ -37,13 +45,13 @@ export default function ShoppingCartModal({
       role="presentation"
     >
       <aside
-        className="w-full max-w-sm rounded-xl bg-white p-5 shadow-xl"
+        className="flex flex-col w-full max-w-sm max-h-[90vh] rounded-xl bg-white p-5 shadow-xl"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
         aria-labelledby="shopping-cart-title"
       >
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
           <h2 id="shopping-cart-title" className="text-lg font-semibold text-zinc-900">
             Shopping Cart
           </h2>
@@ -56,7 +64,26 @@ export default function ShoppingCartModal({
           </button>
         </div>
 
-        <p className="mt-4 text-sm text-zinc-600">No ingredients.</p>
+        {mealEntries.length === 0 ? (
+          <p className="text-sm text-zinc-600">No ingredients.</p>
+        ) : (
+          <ul className="flex flex-col gap-2 overflow-y-auto">
+            {mealEntries.map(([mealId, { mealName, ingredients }]) => (
+              <li key={mealId}>
+                <Accordion title={mealName}>
+                  <ul className="space-y-1">
+                    {ingredients.map(({ ingredient, measure }, index) => (
+                      <li key={index} className="flex justify-between gap-4">
+                        <span>{ingredient}</span>
+                        {measure && <span className="text-zinc-500">{measure}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </Accordion>
+              </li>
+            ))}
+          </ul>
+        )}
       </aside>
     </div>
   );

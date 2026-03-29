@@ -1,4 +1,3 @@
-import React from "react";
 import MealResultsGrid from "../components/meal-results-grid";
 import type { MealDbResponse } from "../types/mealdb";
 
@@ -15,6 +14,8 @@ type SearchPageProps = {
 export default async function SearchPage({ searchParams }: SearchPageProps) {
   const resolvedSearchParams = await Promise.resolve(searchParams);
   const rawText = resolvedSearchParams.text;
+
+  // this allows us to handle both string and string[] types for the search text, defaulting to an empty string if not provided
   const text = (Array.isArray(rawText) ? rawText[0] ?? "" : rawText ?? "").trim();
   const mealDbBaseUrl =
     process.env.MEALDB_BASE_URL ?? "https://www.themealdb.com/api/json/v1/1";
