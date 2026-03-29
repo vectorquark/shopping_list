@@ -22,7 +22,7 @@ export default function Accordion({ title, children }: AccordionProps) {
         <span className="text-zinc-500">{isOpen ? "▲" : "▼"}</span>
       </button>
       {isOpen && (
-        <div className="px-4 py-3 bg-white text-sm text-zinc-700">
+        <div className="h-[300px] overflow-y-auto px-4 py-3 bg-white text-sm text-zinc-700">
           {children}
         </div>
       )}

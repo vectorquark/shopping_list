@@ -7,10 +7,15 @@ type InstructionsListProps = {
 export default function InstructionsList({
   strInstructions,
 }: InstructionsListProps) {
+
+  // some recipes include step labels in the instructions, which we want to filter out
+  const STEP_LABEL_LINE_PATTERN = /^step\s+\d+[:.)-]?$/i;
+
   const items = (strInstructions ?? "")
     .split("\n")
     .map((line) => line.trim())
-    .filter((line) => line.length > 0);
+    .filter((line) => line.length > 0)
+    .filter((line) => !STEP_LABEL_LINE_PATTERN.test(line));
 
   if (items.length === 0) {
     return <p className="text-sm text-zinc-500">Instructions unavailable</p>;

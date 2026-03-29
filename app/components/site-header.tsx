@@ -5,6 +5,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import CartButton from "./cart-button";
 import MealDetail from "./meal-detail";
+import SearchForm from "./search-form";
 import ShoppingCartModal from "./shopping-cart-modal";
 import type { Meal, MealDbResponse } from "../types/mealdb";
 
@@ -74,13 +75,8 @@ export default function SiteHeader() {
           <Link href="/" className="text-lg font-bold tracking-tight text-zinc-900">
             MealDB Search
           </Link>
+          <SearchForm variant="header" />
           <div className="flex items-center gap-4 text-sm font-medium text-zinc-700">
-            <Link href="/" className="transition hover:text-zinc-900">
-              Home
-            </Link>
-            <Link href="/search" className="transition hover:text-zinc-900">
-              Search
-            </Link>
             <button
               type="button"
               onClick={handleOpenRandomMeal}

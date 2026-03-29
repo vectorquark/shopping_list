@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import Accordion from "./accordion";
+import AllSavedIngredientsList from "./all-saved-ingredients-list";
 import IngredientsList from "./ingredients-list";
 import { listMealIngredients, deleteMealEntry, type ShoppingListByMealId } from "../shared/shopping-list-storage";
 
@@ -19,6 +20,7 @@ export default function ShoppingCartModal({
 }: ShoppingCartModalProps) {
   const [savedMeals, setSavedMeals] = useState<ShoppingListByMealId>({});
   const [loadingMealId, setLoadingMealId] = useState<string | null>(null);
+  const [refreshSignal, setRefreshSignal] = useState(0);
 
   useEffect(() => {
     if (!isOpen) {
@@ -26,6 +28,7 @@ export default function ShoppingCartModal({
     }
 
     setSavedMeals(listMealIngredients());
+    setRefreshSignal((prev) => prev + 1);
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -47,6 +50,7 @@ export default function ShoppingCartModal({
     const removedMealName = savedMeals[mealId]?.mealName;
     deleteMealEntry(mealId);
     setSavedMeals(listMealIngredients());
+    setRefreshSignal((prev) => prev + 1);
     toast.success(
       removedMealName
         ? `Removed ${removedMealName} from your shopping list.`
@@ -89,38 +93,42 @@ export default function ShoppingCartModal({
           </button>
         </div>
 
-        {mealEntries.length === 0 ? (
-          <p className="text-sm text-zinc-600">No ingredients.</p>
-        ) : (
-          <ul className="flex flex-col gap-2 overflow-y-auto">
-            {mealEntries.map(([mealId, { mealName, ingredients }]) => (
-              <li key={mealId} className="flex items-start gap-2">
-                <div className="flex-1">
-                <Accordion title={mealName}>
-                  <IngredientsList ingredients={ingredients} />
-                </Accordion>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => handleViewMeal(mealId)}
-                  disabled={loadingMealId === mealId}
-                  className="mt-1 shrink-0 rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100 disabled:cursor-wait disabled:opacity-60"
-                  aria-label={`View ${mealName}`}
-                >
-                  {loadingMealId === mealId ? "Loading..." : "View"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleDelete(mealId)}
-                  className="mt-1 shrink-0 rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 transition"
-                  aria-label={`Remove ${mealName}`}
-                >
-                  Remove
-                </button>
-              </li>
-            ))}
-          </ul>
-        )}
+        <div className="h-[300px] overflow-y-auto pr-1">
+          {mealEntries.length === 0 ? (
+            <p className="text-sm text-zinc-600">No ingredients.</p>
+          ) : (
+            <ul className="flex flex-col gap-2">
+              {mealEntries.map(([mealId, { mealName, ingredients }]) => (
+                <li key={mealId} className="flex items-start gap-2">
+                  <div className="flex-1">
+                  <Accordion title={mealName}>
+                    <IngredientsList ingredients={ingredients} />
+                  </Accordion>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => handleViewMeal(mealId)}
+                    disabled={loadingMealId === mealId}
+                    className="mt-1 shrink-0 rounded-md border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 transition hover:bg-zinc-100 disabled:cursor-wait disabled:opacity-60"
+                    aria-label={`View ${mealName}`}
+                  >
+                    {loadingMealId === mealId ? "Loading..." : "View"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(mealId)}
+                    className="mt-1 shrink-0 rounded-md border border-red-200 px-2 py-1 text-xs font-medium text-red-600 hover:bg-red-50 transition"
+                    aria-label={`Remove ${mealName}`}
+                  >
+                    Remove
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <AllSavedIngredientsList isOpen={isOpen} refreshSignal={refreshSignal} />
       </aside>
     </div>
   );
