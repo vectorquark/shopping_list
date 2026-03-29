@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react";
 import { toast } from "sonner";
 import IngredientsList from "./ingredients-list";
 import InstructionsList from "./instructions-list";
+import MealMeta from "./meal-meta";
 import MealVideo from "./meal-video";
 import { ingredientIterator } from "../shared/get-meal-ingredients";
 import { readMealEntry, updateMealEntry } from "../shared/shopping-list-storage";
@@ -114,22 +115,11 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
             </div>
           </div>
 
-          <div className="mt-4 space-y-2 text-sm text-zinc-700">
-            <p>
-              <span className="font-semibold text-zinc-900">Category:</span>{" "}
-              {meal.strCategory || "Unknown"}
-            </p>
-            <p>
-              <span className="font-semibold text-zinc-900">Area:</span>{" "}
-              {meal.strArea || "Unknown"}
-            </p>
-            {meal.strTags && (
-              <p>
-                <span className="font-semibold text-zinc-900">Tags:</span>{" "}
-                {meal.strTags}
-              </p>
-            )}
-          </div>
+          <MealMeta
+            category={meal.strCategory}
+            area={meal.strArea}
+            tags={meal.strTags}
+          />
 
           <div className="mt-5 grid grid-cols-1 gap-6 lg:grid-cols-2 lg:items-start">
             <div>
