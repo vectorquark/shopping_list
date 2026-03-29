@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import MealCard from "./meal-card";
-import MealModal from "./meal-modal";
+import MealDetail from "./meal-detail";
 import type { Meal } from "../types/mealdb";
 
 type MealResultsGridProps = {
@@ -24,7 +24,7 @@ export default function MealResultsGrid({ meals }: MealResultsGridProps) {
         ))}
       </ul>
 
-      <MealModal meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
+      <MealDetail meal={selectedMeal} onClose={() => setSelectedMeal(null)} />
     </>
   );
 }

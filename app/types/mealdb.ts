@@ -1,3 +1,5 @@
+export const MEAL_FIELD_COUNT = 20;
+
 type FieldIndex =
   | 1
   | 2

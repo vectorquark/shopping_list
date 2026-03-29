@@ -3,14 +3,15 @@
 import React, { useEffect } from "react";
 import IngredientsSummary from "./ingredients-summary";
 import MealVideo from "./meal-video";
+import { ingredientIterator } from "../shared/get-meal-ingredients";
 import type { Meal } from "../types/mealdb";
 
-type MealModalProps = {
+type MealDetailProps = {
   meal: Meal | null;
   onClose: () => void;
 };
 
-export default function MealModal({ meal, onClose }: MealModalProps) {
+export default function MealDetail({ meal, onClose }: MealDetailProps) {
   useEffect(() => {
     if (!meal) {
       return;
@@ -30,6 +31,10 @@ export default function MealModal({ meal, onClose }: MealModalProps) {
     return null;
   }
 
+  const handleAddToShoppingList = () => {
+    console.log(Array.from(ingredientIterator(meal)));
+  };
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
@@ -41,7 +46,7 @@ export default function MealModal({ meal, onClose }: MealModalProps) {
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
-        aria-labelledby="meal-modal-title"
+        aria-labelledby="meal-detail-title"
       >
         {meal.strMealThumb && (
           <img
@@ -53,7 +58,7 @@ export default function MealModal({ meal, onClose }: MealModalProps) {
 
         <div className="p-6">
           <div className="flex items-start justify-between gap-4">
-            <h2 id="meal-modal-title" className="text-2xl font-bold text-zinc-900">
+            <h2 id="meal-detail-title" className="text-2xl font-bold text-zinc-900">
               {meal.strMeal}
             </h2>
             <button
@@ -62,6 +67,16 @@ export default function MealModal({ meal, onClose }: MealModalProps) {
               className="rounded-lg border border-zinc-300 px-3 py-1.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100"
             >
               Close
+            </button>
+          </div>
+
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button
+              type="button"
+              onClick={handleAddToShoppingList}
+              className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-zinc-700"
+            >
+              Add to shopping list
             </button>
           </div>
 
@@ -83,7 +98,7 @@ export default function MealModal({ meal, onClose }: MealModalProps) {
             <div>
               <span className="font-semibold text-zinc-900">Ingredients:</span>
               <div className="mt-1">
-                <IngredientsSummary meal={meal} maxItems={20} />
+                <IngredientsSummary meal={meal} />
               </div>
             </div>
           </div>

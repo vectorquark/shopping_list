@@ -49,11 +49,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <MealResultsGrid meals={meals} />
         )}
 
-        {text && meals?.length === 0 && (
-          <p className="mt-4 text-zinc-600">No recipes found.</p>
-        )}
-
-        {text && meals === null && (
+        {text && (!meals || meals.length === 0) && (
           <p className="mt-4 text-zinc-600">No recipes found.</p>
         )}
       </section>
