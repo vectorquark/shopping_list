@@ -1,3 +1,4 @@
+import Image from "next/image";
 import MealResultsGrid from "../components/meal-results-grid";
 import { searchMealsByName } from "../shared/mealdb-api";
 import type { Meal } from "../types/mealdb";
@@ -44,9 +45,11 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
         {text && (!meals || meals.length === 0) && (
           <div className="mt-6 flex flex-col items-center text-center">
-            <img
+            <Image
               src="/no-recipes-cute.svg"
               alt="Cute empty bowl illustration when no recipes are found"
+              width={320}
+              height={220}
               className="h-auto w-full max-w-xs"
             />
             <p className="mt-3 text-zinc-600">No recipes found.</p>

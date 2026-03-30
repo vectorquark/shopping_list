@@ -4,6 +4,14 @@ const nextConfig: NextConfig = {
   env: {
     MEALDB_BASE_URL: "https://www.themealdb.com/api/json/v1/1",
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "www.themealdb.com",
+      },
+    ],
+  },
 };
 
 export default nextConfig;

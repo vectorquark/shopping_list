@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
+import Image from "next/image";
 import { toast } from "sonner";
 import IngredientsList from "./ingredients-list";
 import InstructionsList from "./instructions-list";
@@ -16,15 +17,12 @@ type MealDetailProps = {
 };
 
 export default function MealDetail({ meal, onClose }: MealDetailProps) {
-  const [isMealSaved, setIsMealSaved] = useState(false);
+  const [savedMealId, setSavedMealId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!meal) {
-      setIsMealSaved(false);
       return;
     }
-
-    setIsMealSaved(Boolean(readMealEntry(meal.idMeal)));
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape" || event.key === "Backspace") {
@@ -40,13 +38,14 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
     return null;
   }
 
+  const isMealSaved = savedMealId === meal.idMeal || Boolean(readMealEntry(meal.idMeal));
   const ingredients = Array.from(ingredientIterator(meal));
 
   const handleAddToShoppingList = () => {
     updateMealEntry(meal.idMeal, meal.strMeal, ingredients);
     toast.success(`Updated ${meal.strMeal} in your shopping list.`);
-    setIsMealSaved(true);
- };
+    setSavedMealId(meal.idMeal);
+  };
 
   const handleOpenShoppingList = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
@@ -68,11 +67,15 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
         aria-labelledby="meal-detail-title"
       >
         {meal.strMealThumb && (
-          <img
-            src={meal.strMealThumb}
-            alt={meal.strMeal}
-            className="h-64 w-full object-cover"
-          />
+          <div className="relative h-64 w-full">
+            <Image
+              src={meal.strMealThumb}
+              alt={meal.strMeal}
+              fill
+              sizes="(max-width: 768px) 100vw, 768px"
+              className="object-cover"
+            />
+          </div>
         )}
 
         <div className="p-6">

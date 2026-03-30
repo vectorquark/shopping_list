@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 import type { Meal } from "../types/mealdb";
 
 type MealCardProps = {
@@ -14,13 +15,14 @@ export default function MealCard({ meal, onSelect }: MealCardProps) {
         onClick={() => onSelect?.(meal)}
         className="w-full cursor-pointer text-left"
       >
-        <div className="aspect-[4/3] w-full bg-zinc-100">
+        <div className="relative aspect-[4/3] w-full bg-zinc-100">
           {meal.strMealThumb ? (
-            <img
+            <Image
               src={meal.strMealThumb}
               alt={meal.strMeal}
-              className="h-full w-full object-cover"
-              loading="lazy"
+              fill
+              sizes="(max-width: 640px) 100vw, 50vw"
+              className="object-cover"
             />
           ) : (
             <div className="flex h-full items-center justify-center text-sm text-zinc-500">
