@@ -12,14 +12,12 @@ export function* ingredientIterator(
     const ingredient = meal[`strIngredient${i}` as keyof Meal];
     const measure = meal[`strMeasure${i}` as keyof Meal];
 
-    if (typeof ingredient !== "string") {
+    if (typeof ingredient !== "string")
       continue;
-    }
 
     const ingredientValue = ingredient.trim();
-    if (!ingredientValue) {
+    if (!ingredientValue)
       continue;
-    }
 
     const measureValue = typeof measure === "string" ? measure.trim() : "";
     yield { ingredient: ingredientValue, measure: measureValue };

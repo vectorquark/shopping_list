@@ -1,5 +1,6 @@
 import MealResultsGrid from "../components/meal-results-grid";
-import type { MealDbResponse } from "../types/mealdb";
+import { searchMealsByName } from "../shared/mealdb-api";
+import type { Meal } from "../types/mealdb";
 
 type SearchPageProps = {
   searchParams:
@@ -17,19 +18,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
 
   // this allows us to handle both string and string[] types for the search text, defaulting to an empty string if not provided
   const text = (Array.isArray(rawText) ? rawText[0] ?? "" : rawText ?? "").trim();
-  const mealDbBaseUrl =
-    process.env.MEALDB_BASE_URL ?? "https://www.themealdb.com/api/json/v1/1";
-
-  let meals: MealDbResponse["meals"] = null;
+  let meals: Meal[] | null = null;
 
   if (text) {
-    const url = `${mealDbBaseUrl}/search.php?s=${encodeURIComponent(text)}`;
-    const response = await fetch(url, { cache: "no-store" });
-
-    if (response.ok) {
-      const data: MealDbResponse = await response.json();
-      meals = data.meals;
-    }
+    meals = await searchMealsByName(text);
   }
 
   return (

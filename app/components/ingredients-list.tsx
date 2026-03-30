@@ -16,7 +16,9 @@ export default function IngredientsList({
 
   return (
     <ul className="space-y-1 text-sm text-zinc-700">
-      {ingredients.map(({ ingredient, measure }, index) => (
+      {ingredients
+      .sort((a, b) => a.ingredient.localeCompare(b.ingredient))
+      .map(({ ingredient, measure }, index) => (
         <li key={`${ingredient}-${measure}-${index}`} className="flex justify-between gap-4">
           <span>{ingredient}</span>
           {measure && <span className="text-zinc-500">{measure}</span>}

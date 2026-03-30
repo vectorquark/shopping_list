@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import Accordion from "./accordion";
 import AllSavedIngredientsList from "./all-saved-ingredients-list";
 import IngredientsList from "./ingredients-list";
+import { mergeIngredientsByName } from "../shared/combine-ingredients";
 import { listMealIngredients, deleteMealEntry, type ShoppingListByMealId } from "../shared/shopping-list-storage";
 
 type ShoppingCartModalProps = {
@@ -20,7 +21,19 @@ export default function ShoppingCartModal({
 }: ShoppingCartModalProps) {
   const [savedMeals, setSavedMeals] = useState<ShoppingListByMealId>({});
   const [loadingMealId, setLoadingMealId] = useState<string | null>(null);
-  const [refreshSignal, setRefreshSignal] = useState(0);
+
+  const allSavedIngredients = useMemo(() => {
+    const ingredientsByMeal = Object.values(savedMeals).map((entry) => entry.ingredients);
+    const combinedIngredients = [];
+
+    for (const mealIngredients of ingredientsByMeal) {
+      for (const ingredient of mealIngredients) {
+        combinedIngredients.push(ingredient);
+      }
+    }
+
+    return mergeIngredientsByName(combinedIngredients);
+  }, [savedMeals]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -28,7 +41,6 @@ export default function ShoppingCartModal({
     }
 
     setSavedMeals(listMealIngredients());
-    setRefreshSignal((prev) => prev + 1);
 
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -44,13 +56,14 @@ export default function ShoppingCartModal({
     return null;
   }
 
-  const mealEntries = Object.entries(savedMeals);
+  const mealEntries = Object.entries(savedMeals).sort((a, b) =>
+    a[1].mealName.localeCompare(b[1].mealName),
+  );
 
   const handleDelete = (mealId: string) => {
     const removedMealName = savedMeals[mealId]?.mealName;
     deleteMealEntry(mealId);
     setSavedMeals(listMealIngredients());
-    setRefreshSignal((prev) => prev + 1);
     toast.success(
       removedMealName
         ? `Removed ${removedMealName} from your shopping list.`
@@ -128,7 +141,7 @@ export default function ShoppingCartModal({
           )}
         </div>
 
-        <AllSavedIngredientsList isOpen={isOpen} refreshSignal={refreshSignal} />
+        <AllSavedIngredientsList ingredients={allSavedIngredients} />
       </aside>
     </div>
   );

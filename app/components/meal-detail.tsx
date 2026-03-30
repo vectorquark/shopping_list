@@ -20,11 +20,14 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
 
   useEffect(() => {
     if (!meal) {
+      setIsMealSaved(false);
       return;
     }
 
+    setIsMealSaved(Boolean(readMealEntry(meal.idMeal)));
+
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
+      if (event.key === "Escape" || event.key === "Backspace") {
         onClose();
       }
     };
@@ -32,15 +35,6 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, [meal, onClose]);
-
-  useEffect(() => {
-    if (!meal) {
-      setIsMealSaved(false);
-      return;
-    }
-
-    setIsMealSaved(Boolean(readMealEntry(meal.idMeal)));
-  }, [meal?.idMeal]);
 
   if (!meal) {
     return null;
@@ -52,8 +46,7 @@ export default function MealDetail({ meal, onClose }: MealDetailProps) {
     updateMealEntry(meal.idMeal, meal.strMeal, ingredients);
     toast.success(`Updated ${meal.strMeal} in your shopping list.`);
     setIsMealSaved(true);
-    console.log(`Saved ${ingredients.length} ingredients for "${meal.strMeal}" (id: ${meal.idMeal})`, ingredients);
-  };
+ };
 
   const handleOpenShoppingList = (event: React.MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();

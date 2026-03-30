@@ -7,7 +7,8 @@ import CartButton from "./cart-button";
 import MealDetail from "./meal-detail";
 import SearchForm from "./search-form";
 import ShoppingCartModal from "./shopping-cart-modal";
-import type { Meal, MealDbResponse } from "../types/mealdb";
+import { fetchMealById, fetchRandomMeal } from "../shared/mealdb-api";
+import type { Meal } from "../types/mealdb";
 
 export default function SiteHeader() {
   const [isShoppingListOpen, setIsShoppingListOpen] = useState(false);
@@ -27,16 +28,7 @@ export default function SiteHeader() {
     setIsLoadingRandomMeal(true);
 
     try {
-      const response = await fetch("https://www.themealdb.com/api/json/v1/1/random.php", {
-        cache: "no-store",
-      });
-
-      if (!response.ok) {
-        return;
-      }
-
-      const data: MealDbResponse = await response.json();
-      setRandomMeal(data.meals?.[0] ?? null);
+      setRandomMeal(await fetchRandomMeal());
     } finally {
       setIsLoadingRandomMeal(false);
     }
@@ -44,17 +36,7 @@ export default function SiteHeader() {
 
   const handleOpenMealById = async (mealId: string) => {
     try {
-      const response = await fetch(`https://www.themealdb.com/api/json/v1/1/lookup.php?i=${encodeURIComponent(mealId)}`, {
-        cache: "no-store",
-      });
-
-      if (!response.ok) {
-        toast.error("Unable to load recipe details right now.");
-        return;
-      }
-
-      const data: MealDbResponse = await response.json();
-      const meal = data.meals?.[0] ?? null;
+      const meal = await fetchMealById(mealId);
 
       if (!meal) {
         toast.error("Recipe not found for this meal.");
