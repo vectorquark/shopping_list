@@ -26,16 +26,16 @@ describe("convertMeasure", () => {
     expect(convertMeasure("2l", "ml")).toBe(2000);
   });
 
-  it("returns the numeric part when units are incompatible", () => {
-    expect(convertMeasure("200g", "ml")).toBe(200);
+  it("returns empty string when units are incompatible", () => {
+    expect(convertMeasure("200g", "ml")).toBe("");
   });
 
   it("returns the numeric value for a unitless measure", () => {
     expect(convertMeasure("3", "")).toBe(3);
   });
 
-  it("returns 0 for a non-numeric measure", () => {
-    expect(convertMeasure("handful", "g")).toBe(0);
+  it("returns empty string for a non-numeric measure", () => {
+    expect(convertMeasure("handful", "g")).toBe("");
   });
 });
 
@@ -70,6 +70,10 @@ describe("combineMeasures", () => {
 
   it("combines units not requiring conversion", () => {
     expect(combineMeasures(["1 basket", "2 basket"])).toBe("3 basket");
+  });
+
+  it("renders incompatible measures as a list", () => {
+    expect(combineMeasures(["100g", "2 tsp"])).toBe("100 g, 2 tsp");
   });
 });
 

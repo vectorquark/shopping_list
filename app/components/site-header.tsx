@@ -28,7 +28,16 @@ export default function SiteHeader() {
     setIsLoadingRandomMeal(true);
 
     try {
-      setRandomMeal(await fetchRandomMeal());
+      const meal = await fetchRandomMeal();
+
+      if (!meal) {
+        toast.error("Unable to load a random recipe right now.");
+        return;
+      }
+
+      setRandomMeal(meal);
+    } catch {
+      toast.error("Unable to load a random recipe right now.");
     } finally {
       setIsLoadingRandomMeal(false);
     }
